@@ -4,7 +4,7 @@ define([
 
 return {
   numberValidator : function(key, val, validator) {
-    if(!((validator.min && val < validator.min) || (validator.max && val > validator.max))) {
+    if((validator.min && val < validator.min) || (validator.max && val > validator.max)) {
       this.logger.error("InvalidValue", {
         key          : key,
         actualValue  : val,

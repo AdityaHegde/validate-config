@@ -15,13 +15,13 @@ return {
       }
       else {
         this.pushToHierarchy(k, k);
-        this.extraParamsValidator(k, val[k], validator.keys[k]);
+        this.extraParamsValidator(k, val[k], validator);
         this.popFromHierarchy();
       }
     }
 
     for(var vk in validator.keys) {
-      if(!checked[vk]) {
+      if(!checked[vk] && validator.keys[vk].isMandatory) {
         this.pushToHierarchy(vk, vk);
         this.mandatoryParamsValidator(vk, null, validator.keys[vk]);
         this.popFromHierarchy();

@@ -16,8 +16,8 @@ return {
     this.fullKeysPresent[this.fullHierarchy] = 1;
 
     if(this.typeValidator(key, val, validator)) {
-      var validator = typeToValidatorMap[validator.type] || typeToValidatorMap["__default__"];
-      this[validator](key, val, validator);
+      var validatorFun = typeToValidatorMap[validator.type] || typeToValidatorMap["__default__"];
+      this[validatorFun](key, val, validator);
     }
 
     this.popFromHierarchy();

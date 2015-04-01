@@ -3,10 +3,18 @@ define(function() {
 return {
   replacePlaceholders : function(hierarchy, hierarchyPlaceholder) {
     var retHierarchy = hierarchyPlaceholder.slice();
-    for(var i = 0, j = 0; i < this.hierarchyPlaceholders.length && j < hierarchy.length && j < retHierarchy.length; i++) {
-      j = this.hierarchyPlaceholders[i].index;
-      if(retHierarchy[j] === this.hierarchyPlaceholders[j].placeholder) {
-        retHierarchy[j] = hierarchy[j];
+    for(var i = 0, j = 0; i < hierarchy.length && j < this.hierarchyPlaceholders.length; i++) {
+      if(i === this.hierarchyPlaceholders[j].index) {
+        if(retHierarchy[i] === this.hierarchyPlaceholders[j].placeholder) {
+          retHierarchy[i] = hierarchy[i];
+          j++;
+        }
+        else {
+          break;
+        }
+      }
+      else if(hierarchy[i] !== retHierarchy[i]) {
+        break;
       }
     }
     return retHierarchy;

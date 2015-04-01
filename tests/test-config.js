@@ -1,5 +1,7 @@
 var require = {
-  baseUrl : "",
+  baseUrl : "../",
+  paths : {
+  },
   shim : {
   },
   waitSeconds : 10,

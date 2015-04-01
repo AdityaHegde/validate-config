@@ -1,0 +1,11 @@
+default:
+  - 'requirejs'
+  - 'qunit'
+  - 'concat'
+  - 'uglify'
+  - 'yuidoc'
+  - 'clean'
+
+deploy:
+  - 'default'
+  - 'coveralls'

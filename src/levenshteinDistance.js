@@ -38,7 +38,5 @@ define(function() {
     }
     return LevenshteinDistanceMain(s1, s1.length, s2, s2.length);
   };
-  return {
-    LevenshteinDistance : LevenshteinDistance
-  };
+  return LevenshteinDistance;
 });

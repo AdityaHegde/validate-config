@@ -6,7 +6,7 @@ return {
   regexValidator : function(key, val, validator) {
     var result = true;
     if(validator.regex) {
-      result = val.match(validator.regex);
+      result = !!val.match(validator.regex);
     }
     if(!result) {
       this.logger.error("InvalidValue", {

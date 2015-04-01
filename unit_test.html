@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="src/lib/qunit.css">
+    <script src="src/lib/qunit.js"></script>
+    <script>QUnit.config.autostart = false;</script>
+  </head>
+  <body>
+    <script src="tests/test-config.js"></script>
+    <script>require.baseUrl = "."</script>
+    <script data-main="tests/validate-config-tests" src="src/lib/require.js"></script>
+    <div id="qunit"></div>
+  </body>
+</html>

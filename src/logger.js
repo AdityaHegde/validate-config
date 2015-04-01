@@ -1,6 +1,5 @@
 define([
-  "handlebars",
-], function(Handlebars) {
+], function() {
 
 var typeToVarMap = {
   "Warn" : "warns",
@@ -13,7 +12,7 @@ function Logger() {
   this.warns = [];
 }
 
-Logger.stringGeneratorTemplates = {
+/*Logger.stringGeneratorTemplates = {
   "MandatoryParamMissing" : Handlebars.compile('' +
     '<div>' +
       '<p>{{type}}: {{message}}</p>' +
@@ -43,16 +42,23 @@ Logger.stringGeneratorTemplates = {
       '<p>{{type}}: {{message}}</p>' +
       '<p>{{params, errMessage}} at {{params.hierarchyStr}}</p>' +
     '</div>'),
-};
+};*/
 
 Logger.prototype.log = function(type, message, params) {
-  var str = Logger.stringGeneratorTemplates[message]({
+  /*var str = Logger.stringGeneratorTemplates[message]({
     type : type,
     message : message,
     params : params,
   });
   this[typeToVarMap[type]].push(str);
-  this.messages.push(str);
+  this.messages.push(str);*/
+  var messageObj = {
+    type : type,
+    message : message,
+    params : params,
+  };
+  this[typeToVarMap[type]].push(messageObj);
+  this.messages.push(messageObj);
 };
 
 Logger.prototype.warn = function(message, params) {
