@@ -1,7 +1,24 @@
 <html>
-  <head><title>Validate Config</title></head>
+  <head>
+    <link rel="stylesheet" href="src/test-page/css/bootstrap.min.css">
+    <link rel="stylesheet" href="src/test-page/css/bootstrap-theme.min.css">
+    <title>Validate Config</title>
+  </head>
   <body>
-    <script src="src/requirejs-config.js"></script>
-    <script data-main="src/validate-config" src="src/lib/require.js"></script>
+    <script src="src/test-page/requirejs-config.js"></script>
+    <script data-main="test-page/test-page" src="src/lib/require.js"></script>
+
+    <div>
+      <textarea rows="25" class="col-md-6 validator-textarea"></textarea>
+      <textarea rows="25" class="col-md-6 config-textarea"></textarea>
+      <div class="clearfix"></div>
+    </div>
+    <p></p>
+    <div>
+      <button class="btn btn-primary center-block verify-bttn">Verify</button>
+    </div>
+    <p></p>
+    <div class="messages well">
+    </div>
   </body>
 </html>

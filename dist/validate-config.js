@@ -1,12 +1,12 @@
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD.
-    define(['jquery', 'ember'], factory);
+    define([], factory);
   } else {
     // Browser globals.
-    root.Utils = factory(root.$);
+    root.ValidateConfig = factory();
   }
-}(this, function($) {
+}(this, function() {
 /**
  * @license almond 0.3.0 Copyright (c) 2011-2014, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
@@ -950,14 +950,8 @@ return ValidateConfig;
 
   // Register in the values from the outer closure for common dependencies
   // as local almond modules
-  define('jquery', function() {
-    return $;
-  });
-  define('ember', function() {
-    return Ember;
-  });
  
   // Use almond's special top level synchronous require to trigger factory
   // functions, get the final module, and export it as the public api.
-  return require('ember-utils-core');
+  return require('validate-config');
 }));
