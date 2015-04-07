@@ -528,7 +528,13 @@ define('validators/arrayValidator',[
 return {
   arrayValidator : function(key, val, validator) {
     for(var i = 0; i < val.length; i++) {
-      this.validator(i, val[i], validator.elementsValidator);
+      this.pushToHierarchy(i, validator.placeholderKey);
+
+      var newVal = this.morphKey(i, val[i], validator.elementsValidator, true);
+      this.validator(i, newVal, validator.elementsValidator);
+      val[i] = newVal;
+
+      this.popFromHierarchy();
     }
 
     return true;
@@ -596,7 +602,7 @@ typeToValidatorMap = {
 
 return {
   validator : function(key, val, validator) {
-    this.pushToHierarchy(key, (validator.parentValidator && validator.parentValidator.placeholderKey) || key);
+    //this.pushToHierarchy(key, (validator.parentValidator && validator.parentValidator.placeholderKey) || key);
     this.fullKeysPresent[this.fullHierarchy] = 1;
 
     if(this.typeValidator(key, val, validator)) {
@@ -604,7 +610,7 @@ return {
       this[validatorFun](key, val, validator);
     }
 
-    this.popFromHierarchy();
+    //this.popFromHierarchy();
 
     return true;
   },
@@ -734,23 +740,32 @@ return {
     var
     checked = {};
 
-    for(var k in val) {
-      checked[k] = 1;
+    for(var vk in validator.keys) {
+      var
+      newVal = val[vk],
+      isPresent = val.hasOwnProperty(vk);
 
-      if(validator.keys[k]) {
-        this.validator(k, val[k], validator.keys[k]);
+      this.pushToHierarchy(vk, vk);
+
+      newVal = this.morphKey(vk, newVal, validator.keys[vk], isPresent);
+
+      if(isPresent || (newVal !== null && newVal !== undefined)) {
+        val[vk] = newVal;
+        this.validator(vk, val[vk], validator.keys[vk]);
       }
       else {
-        this.pushToHierarchy(k, k);
-        this.extraParamsValidator(k, val[k], validator);
-        this.popFromHierarchy();
+        if(validator.keys[vk].isMandatory) {
+          this.mandatoryParamsValidator(vk, null, validator.keys[vk]);
+        }
       }
+
+      this.popFromHierarchy();
     }
 
-    for(var vk in validator.keys) {
-      if(!checked[vk] && validator.keys[vk].isMandatory) {
-        this.pushToHierarchy(vk, vk);
-        this.mandatoryParamsValidator(vk, null, validator.keys[vk]);
+    for(var k in val) {
+      if(!validator.keys[k]) {
+        this.pushToHierarchy(k, k);
+        this.extraParamsValidator(k, val[k], validator);
         this.popFromHierarchy();
       }
     }
@@ -804,7 +819,308 @@ define('validators/main',[
   return Validators;
 });
 
-define('set-validator',[],function() {
+define('morph-config/morph-key',[
+], function() {
+
+return {
+  morphKey : function(key, val, validator, isPresent) {
+    var newVal = val;
+    if(isPresent) {
+      if(validator.morph) {
+        newVal = this.morphType(key, newVal, validator, isPresent);
+      }
+
+      newVal = this.morphValue(key, newVal, validator, isPresent);
+    }
+    else {
+      if(validator.morph && validator.morph.hasOwnProperty("default")) {
+        newVal = validator.morph.default;
+      }
+    }
+
+    return newVal;
+  },
+};
+
+});
+
+define('morph-config/morph-number-type',[
+], function() {
+
+return {
+  "string" : function(key, val, validator) {
+    var retVal = val;
+    switch(validator.morph.type) {
+      case "parse" :
+      default:
+        retVal = Number(val);
+        if(isNaN(retVal)) {
+          retVal = val;
+        }
+        break;
+    }
+
+    return retVal;
+  },
+
+  "boolean" : function(key, val, validator) {
+    return val ? 1 : 0;
+  },
+
+  "__default__" : function(key, val, validator) {
+    return val;
+  },
+};
+
+});
+
+define('morph-config/morph-string-type',[
+  "../typeOf",
+], function(typeOf) {
+
+return {
+  "number" : function(key, val, validator) {
+    return val + "";
+  },
+
+  "boolean" : function(key, val, validator) {
+    return val + "";
+  },
+
+  "array" : function(key, val, validator) {
+    var retVal = val;
+    switch(validator.morph.type) {
+      case "join" :
+        retVal = val.join(validator.morph.joinStr || ",");
+        break;
+
+      case "stringify" :
+      default:
+        retVal = JSON.stringify(val);
+        break;
+    }
+
+    return retVal;
+  },
+
+  "object" : function(key, val, validator) {
+    var retVal = val;
+    switch(validator.morph.type) {
+      default:
+      case "stringify" :
+        retVal = JSON.stringify(val);
+        break;
+    }
+
+    return retVal;
+  },
+
+  "__default__" : function(key, val, validator) {
+    return val;
+  },
+};
+
+});
+
+define('morph-config/morph-object-type',[
+], function() {
+
+return {
+  "string" : function(key, val, validator) {
+    var retVal = val;
+    switch(validator.morph.type) {
+      case "parse" :
+      default:
+
+        try {
+          retVal = JSON.parse(val);
+        } catch(e) {
+          this.logger.error("InvalidValue", {
+            key          : key,
+            actualValue  : val,
+            validator    : validator,
+            hierarchyStr : this.hierarchyStr,
+          });
+        }
+
+        break;
+    }
+    return retVal;
+  },
+
+  "array" : function(key, val, validator) {
+    var
+    retObj = val;
+
+    switch(validator.morph.type) {
+      case "indexToKeys" :
+      default:
+
+        var
+        i = 0;
+        retObj = {};
+        for(; i < val.length; i++) {
+          if(validator.morph.indexToKeys.length > i) {
+            retObj[validator.morph.indexToKeys[i].key] = val[i];
+          }
+        }
+        for(; i < validator.morph.indexToKeys.length; i++) {
+          if(validator.morph.indexToKeys[i].default) {
+            retObj[validator.morph.indexToKeys[i].key] = validator.morph.indexToKeys[i].default;
+          }
+        }
+
+        break;
+    }
+
+    return retObj;
+  },
+
+  "__default__" : function(key, val, validator) {
+    return val;
+  },
+};
+
+});
+
+define('morph-config/morph-array-type',[
+], function() {
+
+return {
+  "string" :function(key, val, validator) {
+    var retVal = val;
+    switch(validator.morph.type) {
+      case "split" :
+        var splitRegex = new RegExp(validator.morph.splitStr || ",");
+        retVal = val.split(splitRegex);
+        break;
+
+      case "parse" :
+      default:
+        try {
+          retVal = JSON.parse(val);
+        } catch(e) {
+          this.logger.error("InvalidValue", {
+            key          : key,
+            actualValue  : val,
+            validator    : validator,
+            hierarchyStr : this.hierarchyStr,
+          });
+        }
+        break;
+    }
+    return retVal;
+  },
+
+  "array" : function(key, val, validator) {
+    return val;
+  },
+
+  "__default__" : function(key, val, validator) {
+    if(val !== null || val !== undefined) {
+      return [val];
+    }
+    return val;
+  },
+};
+
+});
+
+define('morph-config/morph-type',[
+  "../typeOf",
+  "./morph-number-type",
+  "./morph-string-type",
+  "./morph-object-type",
+  "./morph-array-type",
+], function(typeOf, MorphNumberType, MorphStringType, MorphObjectType, MorphArrayType) {
+
+var typeToMorphMap = {
+  "number" : MorphNumberType,
+  "string" : MorphStringType,
+  "object" : MorphObjectType,
+  "array"  : MorphArrayType,
+
+  "__default__" : {
+    "__default__" : function() {
+      return null;
+    },
+  },
+};
+
+return {
+  morphType : function(key, val, validator) {
+    var
+    morphSet = typeToMorphMap[validator.type] || typeToMorphMap["__default__"],
+    morphFn = morphSet[typeOf(val)] || morphSet["__default__"];
+
+    return morphFn.call(this, key, val, validator);
+  },
+};
+
+});
+
+define('morph-config/morph-object-value',[
+], function() {
+
+return {
+  "seperateKeys" : function(key, val, validator) {
+    return val;
+  },
+
+  "__default__" : function(key, val, validator) {
+    return val;
+  },
+};
+
+});
+
+define('morph-config/morph-value',[
+  "../typeOf",
+  "./morph-object-value",
+], function(typeOf, MorphObjectValue) {
+
+var typeToMorphMap = {
+  "object" : MorphObjectValue,
+};
+
+return {
+  morphValue : function(key, val, validator) {
+    if(validator.morph) {
+      var
+      morphSet = typeToMorphMap[validator.type],
+      morphFn = morphSet && (morphSet[validator.morph.valueMorphType] || morphSet["__default__"]);
+
+      if(morphFn) {
+        return morphFn.call(this, key, val, validator);
+      }
+    }
+
+    return val;
+  },
+};
+
+});
+
+define('morph-config/main',[
+  "./morph-key",
+  "./morph-type",
+  "./morph-value",
+], function() {
+  var MorphConfig = {};
+  window.MorphConfig = MorphConfig;
+
+  for(var i = 0; i < arguments.length; i++) {
+    for(var k in arguments[i]) {
+      MorphConfig[k] = arguments[i][k];
+    }
+  }
+
+  return MorphConfig;
+});
+
+define('set-validator',[
+  "./typeOf",
+], function(typeOf) {
 
 return {
   _prepareValidator : function(validator) {
@@ -831,6 +1147,10 @@ return {
       this._prepareValidator(validator.elementsValidator);
 
       this.hierarchy.pop();
+    }
+
+    if(validator.morph && typeOf(validator.morph) === "boolean") {
+      validator.morph = {};
     }
   },
 
@@ -909,6 +1229,7 @@ return {
 define('validate-config',[
   "./logger",
   "./validators/main",
+  "./morph-config/main",
   "./set-validator",
   "./hierarchy",
 ], function(Logger) {
@@ -934,7 +1255,9 @@ ValidateConfig.prototype.reset = function() {
 };
 
 ValidateConfig.prototype.validate = function(config) {
+  this.pushToHierarchy("$", "$");
   this.validator("$", config, this.validatorConfig);
+  this.popFromHierarchy();
 };
 
 for(var i = 1; i < arguments.length; i++) {

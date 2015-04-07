@@ -12,7 +12,7 @@ typeToValidatorMap = {
 
 return {
   validator : function(key, val, validator) {
-    this.pushToHierarchy(key, (validator.parentValidator && validator.parentValidator.placeholderKey) || key);
+    //this.pushToHierarchy(key, (validator.parentValidator && validator.parentValidator.placeholderKey) || key);
     this.fullKeysPresent[this.fullHierarchy] = 1;
 
     if(this.typeValidator(key, val, validator)) {
@@ -20,7 +20,7 @@ return {
       this[validatorFun](key, val, validator);
     }
 
-    this.popFromHierarchy();
+    //this.popFromHierarchy();
 
     return true;
   },

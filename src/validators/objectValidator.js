@@ -7,23 +7,32 @@ return {
     var
     checked = {};
 
-    for(var k in val) {
-      checked[k] = 1;
+    for(var vk in validator.keys) {
+      var
+      newVal = val[vk],
+      isPresent = val.hasOwnProperty(vk);
 
-      if(validator.keys[k]) {
-        this.validator(k, val[k], validator.keys[k]);
+      this.pushToHierarchy(vk, vk);
+
+      newVal = this.morphKey(vk, newVal, validator.keys[vk], isPresent);
+
+      if(isPresent || (newVal !== null && newVal !== undefined)) {
+        val[vk] = newVal;
+        this.validator(vk, val[vk], validator.keys[vk]);
       }
       else {
-        this.pushToHierarchy(k, k);
-        this.extraParamsValidator(k, val[k], validator);
-        this.popFromHierarchy();
+        if(validator.keys[vk].isMandatory) {
+          this.mandatoryParamsValidator(vk, null, validator.keys[vk]);
+        }
       }
+
+      this.popFromHierarchy();
     }
 
-    for(var vk in validator.keys) {
-      if(!checked[vk] && validator.keys[vk].isMandatory) {
-        this.pushToHierarchy(vk, vk);
-        this.mandatoryParamsValidator(vk, null, validator.keys[vk]);
+    for(var k in val) {
+      if(!validator.keys[k]) {
+        this.pushToHierarchy(k, k);
+        this.extraParamsValidator(k, val[k], validator);
         this.popFromHierarchy();
       }
     }

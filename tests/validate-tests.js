@@ -340,6 +340,14 @@ QUnit.test("Misc Validation", function(assert) {
       },
     },
     messages : [{
+      message : "MandatoryParamMissing",
+      params : {
+        hierarchyStr : "$.key1Level0",
+        key : "key0Level0",
+        validator : validator2.keys.key1Level0.keys.key0Level0,
+      },
+      type : "Error",
+    }, {
       message : "ExtraParam",
       params : {
         hierarchyStr : "$.key1Level0",
@@ -366,14 +374,6 @@ QUnit.test("Misc Validation", function(assert) {
         validator : validator2.keys.key1Level0,
       },
       type : "Warn",
-    }, {
-      message : "MandatoryParamMissing",
-      params : {
-        hierarchyStr : "$.key1Level0",
-        key : "key0Level0",
-        validator : validator2.keys.key1Level0.keys.key0Level0,
-      },
-      type : "Error",
     }],
   }, {
     input : {

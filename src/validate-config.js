@@ -1,6 +1,7 @@
 define([
   "./logger",
   "./validators/main",
+  "./morph-config/main",
   "./set-validator",
   "./hierarchy",
 ], function(Logger) {
@@ -26,7 +27,9 @@ ValidateConfig.prototype.reset = function() {
 };
 
 ValidateConfig.prototype.validate = function(config) {
+  this.pushToHierarchy("$", "$");
   this.validator("$", config, this.validatorConfig);
+  this.popFromHierarchy();
 };
 
 for(var i = 1; i < arguments.length; i++) {

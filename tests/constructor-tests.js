@@ -216,6 +216,65 @@ QUnit.test("Set Validator", function(assert) {
         warns    : []
       },
     },
+  }, {
+    input  : {
+      type : "object",
+      keys : {
+        a : {
+          type : "number",
+          morph : true,
+        },
+        b : {
+          type : "string",
+        },
+        c : {
+          type : "string",
+          morph : {
+            type : "stringify",
+          },
+        },
+      },
+    },
+    output : {
+      fullKeysPresent       : {},
+      fullKeysSet           : {
+        a : [
+          ["$", "a"],
+        ],
+        b : [
+          ["$", "b"],
+        ],
+        c : [
+          ["$", "c"],
+        ],
+      },
+      hierarchy             : [],
+      hierarchyPlaceholder  : [],
+      hierarchyPlaceholders : [],
+      validatorConfig       : {
+        type : "object",
+        keys : {
+          a : {
+            type : "number",
+            morph : {},
+          },
+          b : {
+            type : "string",
+          },
+          c : {
+            type : "string",
+            morph : {
+              type : "stringify",
+            },
+          },
+        },
+      },
+      logger : {
+        errors   : [],
+        messages : [],
+        warns    : []
+      },
+    },
   }];
 
   for(var i = 0; i < tests.length; i++) {

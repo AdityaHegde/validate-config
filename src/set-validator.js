@@ -1,4 +1,6 @@
-define(function() {
+define([
+  "./typeOf",
+], function(typeOf) {
 
 return {
   _prepareValidator : function(validator) {
@@ -25,6 +27,10 @@ return {
       this._prepareValidator(validator.elementsValidator);
 
       this.hierarchy.pop();
+    }
+
+    if(validator.morph && typeOf(validator.morph) === "boolean") {
+      validator.morph = {};
     }
   },
 
