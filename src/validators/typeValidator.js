@@ -5,11 +5,11 @@ define([
 return {
   typeValidator : function(key, val, validator) {
     if(typeOf(val) !== validator.type) {
-      this.logger.error("InvalidType", {
+      this.invalidKeys.markAs("type", this.hierarchy.fullHierarchyStr, "error", {
         key          : key,
         actualType   : typeOf(val),
         validator    : validator,
-        hierarchyStr : this.hierarchyStr,
+        hierarchyStr : this.hierarchy.hierarchyStr,
       });
       return false;
     }

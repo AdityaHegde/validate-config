@@ -12,7 +12,7 @@ return {
       newVal = val[vk],
       isPresent = val.hasOwnProperty(vk);
 
-      this.pushToHierarchy(vk, vk);
+      this.hierarchy.pushToHierarchy(vk, vk);
 
       newVal = this.morphKey(vk, newVal, validator.keys[vk], isPresent);
 
@@ -26,14 +26,14 @@ return {
         }
       }
 
-      this.popFromHierarchy();
+      this.hierarchy.popFromHierarchy();
     }
 
     for(var k in val) {
       if(!validator.keys[k]) {
-        this.pushToHierarchy(k, k);
+        this.hierarchy.pushToHierarchy(k, k);
         this.extraParamsValidator(k, val[k], validator);
-        this.popFromHierarchy();
+        this.hierarchy.popFromHierarchy();
       }
     }
 

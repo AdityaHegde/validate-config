@@ -9,7 +9,7 @@ define([
   "./typeValidator",
 ], function() {
   var Validators = {};
-  window.Validators = Validators;
+  //window.Validators = Validators;
 
   for(var i = 0; i < arguments.length; i++) {
     for(var k in arguments[i]) {

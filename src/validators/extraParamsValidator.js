@@ -29,18 +29,18 @@ return {
 
     if(this.fullKeysSet[key]) {
       for(var i = 0; i < this.fullKeysSet[key].length; i++) {
-        var hierarchy = this.replacePlaceholders(this.hierarchy, this.fullKeysSet[key][i]).join(".");
+        var hierarchy = this.hierarchy.replacePlaceholders(this.fullKeysSet[key][i]).join(".");
         if(!this.fullKeysPresent[hierarchy]) {
           otherLoc.push(hierarchy);
         }
       }
     }
 
-    this.logger.warn("ExtraParam", {
+    this.invalidKeys.markAs("extra", this.hierarchy.fullHierarchyStr, "warn", {
       key          : key,
       val          : val,
       validator    : validator,
-      hierarchyStr : this.hierarchyStr,
+      hierarchyStr : this.hierarchy.hierarchyStr,
       matches      : matches,
       otherLoc     : otherLoc,
     });

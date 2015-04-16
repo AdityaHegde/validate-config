@@ -1,10 +1,10 @@
 define([
-  "./logger",
+  "./invalidKeys",
+  "deep_keys_lib",
   "./validators/main",
   "./morph-config/main",
   "./set-validator",
-  "./hierarchy",
-], function(Logger) {
+], function(InvalidKeys, DeepKeysLib) {
 
 function ValidateConfig(validator) {
   if(validator) {
@@ -16,29 +16,27 @@ function ValidateConfig(validator) {
 }
 
 ValidateConfig.prototype.reset = function() {
-  this.hierarchy = [];
-  this.hierarchyPlaceholder = [];
-  this.hierarchyPlaceholders = [];
+  this.hierarchy = new DeepKeysLib.HierarchyManager();
 
-  this.logger = new Logger();
+  this.invalidKeys = new InvalidKeys();
 
   this.fullKeysPresent = {};
   this.fullKeysSet = {};
 };
 
 ValidateConfig.prototype.validate = function(config) {
-  this.pushToHierarchy("$", "$");
+  this.hierarchy.pushToHierarchy("$", "$");
   this.validator("$", config, this.validatorConfig);
-  this.popFromHierarchy();
+  this.hierarchy.popFromHierarchy();
 };
 
-for(var i = 1; i < arguments.length; i++) {
+for(var i = 2; i < arguments.length; i++) {
   for(var k in arguments[i]) {
     ValidateConfig.prototype[k] = arguments[i][k];
   }
 }
 
-window.ValidateConfig = ValidateConfig;
+//window.ValidateConfig = ValidateConfig;
 return ValidateConfig;
 
 });

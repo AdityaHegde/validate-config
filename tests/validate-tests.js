@@ -105,16 +105,22 @@ QUnit.test("Type Validation", function(assert) {
   var
   tests = [{
     input : "a",
-    messages : [{
-      message : "InvalidType",
-      params : {
-        actualType : "string",
-        hierarchyStr : "",
-        key : "$",
-        validator : validator1,
+    invalidKeys : {
+      extraKey            : {},
+      invalidType         : {
+        "$" : {
+          type : "error",
+          details : {
+            actualType   : "string",
+            hierarchyStr : "",
+            key          : "$",
+            validator    : validator1,
+          },
+        },
       },
-      type: "Error",
-    }],
+      invalidValue        : {},
+      mandatoryKeyMissing : {},
+    },
   }, {
     input : {
       alpha : 123,
@@ -126,43 +132,49 @@ QUnit.test("Type Validation", function(assert) {
       },
       array : "abc",
     },
-    messages : [{
-      message : "InvalidType",
-      params : {
-        actualType : "number",
-        hierarchyStr : "$",
-        key : "alpha",
-        validator : validator1.keys.alpha,
+    invalidKeys : {
+      extraKey            : {},
+      invalidType         : {
+        "$.alpha": {
+          details : {
+            actualType   : "number",
+            hierarchyStr : "$",
+            key          : "alpha",
+            validator    : validator1.keys.alpha,
+          },
+          type : "error"
+        },
+        "$.array": {
+          details : {
+            actualType   : "string",
+            hierarchyStr : "$",
+            key          : "array",
+            validator    : validator1.keys.array,
+          },
+          type : "error"
+        },
+        "$.numbers.num": {
+          details : {
+            actualType   : "string",
+            hierarchyStr : "$.numbers",
+            key          : "num",
+            validator    : validator1.keys.numbers.keys.num,
+          },
+          type : "error"
+        },
+        "$.numbers.numMax": {
+          details : {
+            actualType   : "string",
+            hierarchyStr : "$.numbers",
+            key          : "numMax",
+            validator    : validator1.keys.numbers.keys.numMax,
+          },
+          type : "error"
+        }
       },
-      type : "Error",
-    }, {
-      message : "InvalidType",
-      params : {
-        actualType : "string",
-        hierarchyStr : "$.numbers",
-        key : "num",
-        validator : validator1.keys.numbers.keys.num,
-      },
-      type : "Error",
-    }, {
-      message : "InvalidType",
-      params : {
-        actualType : "string",
-        hierarchyStr : "$.numbers",
-        key : "numMax",
-        validator : validator1.keys.numbers.keys.numMax,
-      },
-      type : "Error",
-    }, {
-      message : "InvalidType",
-      params : {
-        actualType : "string",
-        hierarchyStr : "$",
-        key : "array",
-        validator : validator1.keys.array,
-      },
-      type : "Error",
-    }],
+      invalidValue        : {},
+      mandatoryKeyMissing : {},
+    },
   }, {
     input : {
       alpha : "abc",
@@ -173,34 +185,40 @@ QUnit.test("Type Validation", function(assert) {
         [],
       ],
     },
-    messages : [{
-      message : "InvalidType",
-      params : {
-        actualType : "string",
-        hierarchyStr : "$.array",
-        key : 1,
-        validator : validator1.keys.array.elementsValidator,
+    invalidKeys : {
+      extraKey            : {},
+      invalidType         : {
+        "$.array.1": {
+          details : {
+            actualType   : "string",
+            hierarchyStr : "$.array",
+            key          : 1,
+            validator    : validator1.keys.array.elementsValidator,
+          },
+          type : "error"
+        },
+        "$.array.2": {
+          details : {
+            actualType   : "object",
+            hierarchyStr : "$.array",
+            key          : 2,
+            validator    : validator1.keys.array.elementsValidator,
+          },
+          type : "error"
+        },
+        "$.array.3": {
+          details : {
+            actualType   : "array",
+            hierarchyStr : "$.array",
+            key          : 3,
+            validator    : validator1.keys.array.elementsValidator,
+          },
+          type : "error"
+        }
       },
-      type : "Error",
-    }, {
-      message : "InvalidType",
-      params : {
-        actualType : "object",
-        hierarchyStr : "$.array",
-        key : 2,
-        validator : validator1.keys.array.elementsValidator,
-      },
-      type : "Error",
-    }, {
-      message : "InvalidType",
-      params : {
-        actualType : "array",
-        hierarchyStr : "$.array",
-        key : 3,
-        validator : validator1.keys.array.elementsValidator,
-      },
-      type : "Error",
-    }],
+      invalidValue        : {},
+      mandatoryKeyMissing : {},
+    },
   }];
 
   for(var i = 0; i < tests.length; i++) {
@@ -210,7 +228,7 @@ QUnit.test("Type Validation", function(assert) {
     //clear parent validator refs to remove circular refs
     hasParentRefs(validator1);
 
-    assert.propEqual(ValidateConfigObj.logger.messages, tests[i].messages);
+    assert.propEqual(ValidateConfigObj.invalidKeys, tests[i].invalidKeys);
   }
 });
 
@@ -227,6 +245,12 @@ QUnit.test("Value Validation", function(assert) {
       },
     },
     messages : [],
+    invalidKeys : {
+      extraKey            : {},
+      invalidType         : {},
+      invalidValue        : {},
+      mandatoryKeyMissing : {},
+    },
   }, {
     input : {
       alpha : "123",
@@ -237,34 +261,40 @@ QUnit.test("Value Validation", function(assert) {
         numMinMax : Number.MIN_SAFE_INTEGER,
       },
     },
-    messages : [{
-      message : "InvalidValue",
-      params : {
-        actualValue : "123",
-        hierarchyStr : "$",
-        key : "alpha",
-        validator : validator1.keys.alpha,
+    invalidKeys : {
+      extraKey            : {},
+      invalidType         : {},
+      invalidValue        : {
+        "$.alpha" : {
+          details : {
+            actualValue  : "123",
+            hierarchyStr : "$",
+            key          : "alpha",
+            validator    : validator1.keys.alpha,
+          },
+          type : "error",
+        },
+        "$.numbers.numMin": {
+          details : {
+            actualValue  : Number.MIN_SAFE_INTEGER,
+            hierarchyStr : "$.numbers",
+            key          : "numMin",
+            validator    : validator1.keys.numbers.keys.numMin,
+          },
+          type : "error",
+        },
+        "$.numbers.numMinMax": {
+          details : {
+            actualValue  : Number.MIN_SAFE_INTEGER,
+            hierarchyStr : "$.numbers",
+            key          : "numMinMax",
+            validator    : validator1.keys.numbers.keys.numMinMax,
+          },
+          type : "error",
+        },
       },
-      type : "Error",
-    }, {
-      message : "InvalidValue",
-      params : {
-        actualValue : Number.MIN_SAFE_INTEGER,
-        hierarchyStr : "$.numbers",
-        key : "numMin",
-        validator : validator1.keys.numbers.keys.numMin,
-      },
-      type : "Error",
-    }, {
-      message : "InvalidValue",
-      params : {
-        actualValue : Number.MIN_SAFE_INTEGER,
-        hierarchyStr : "$.numbers",
-        key : "numMinMax",
-        validator : validator1.keys.numbers.keys.numMinMax,
-      },
-      type : "Error",
-    }],
+      mandatoryKeyMissing : {},
+    },
   }, {
     input : {
       alpha : "abc",
@@ -275,25 +305,31 @@ QUnit.test("Value Validation", function(assert) {
         numMinMax : Number.MAX_SAFE_INTEGER,
       },
     },
-    messages : [{
-      message : "InvalidValue",
-      params : {
-        actualValue : Number.MAX_SAFE_INTEGER,
-        hierarchyStr : "$.numbers",
-        key : "numMax",
-        validator : validator1.keys.numbers.keys.numMax,
+    invalidKeys : {
+      extraKey            : {},
+      invalidType         : {},
+      invalidValue        : {
+        "$.numbers.numMax": {
+          details : {
+            actualValue  : Number.MAX_SAFE_INTEGER,
+            hierarchyStr : "$.numbers",
+            key          : "numMax",
+            validator    : validator1.keys.numbers.keys.numMax,
+          },
+          type : "error",
+        },
+        "$.numbers.numMinMax": {
+          details : {
+            actualValue  : Number.MAX_SAFE_INTEGER,
+            hierarchyStr : "$.numbers",
+            key          : "numMinMax",
+            validator    : validator1.keys.numbers.keys.numMinMax,
+          },
+          type : "error",
+        },
       },
-      type : "Error",
-    }, {
-      message : "InvalidValue",
-      params : {
-        actualValue : Number.MAX_SAFE_INTEGER,
-        hierarchyStr : "$.numbers",
-        key : "numMinMax",
-        validator : validator1.keys.numbers.keys.numMinMax,
-      },
-      type : "Error",
-    }],
+      mandatoryKeyMissing : {},
+    },
   }];
 
   for(var i = 0; i < tests.length; i++) {
@@ -303,7 +339,7 @@ QUnit.test("Value Validation", function(assert) {
     //clear parent validator refs to remove circular refs
     hasParentRefs(validator1);
 
-    assert.propEqual(ValidateConfigObj.logger.messages, tests[i].messages);
+    assert.propEqual(ValidateConfigObj.invalidKeys, tests[i].invalidKeys);
   }
 });
 
@@ -317,20 +353,32 @@ QUnit.test("Misc Validation", function(assert) {
       },
     },
     messages : [],
+    invalidKeys : {
+      extraKey            : {},
+      invalidType         : {},
+      invalidValue        : {},
+      mandatoryKeyMissing : {},
+    },
   }, {
     input : {
       key0Level0 : "abc",
       key1Level0 : {},
     },
-    messages : [{
-      message : "MandatoryParamMissing",
-      params : {
-        hierarchyStr : "$.key1Level0",
-        key : "key0Level0",
-        validator : validator2.keys.key1Level0.keys.key0Level0,
+    invalidKeys : {
+      extraKey            : {},
+      invalidType         : {},
+      invalidValue        : {},
+      mandatoryKeyMissing : {
+        "$.key1Level0.key0Level0" : {
+          type : "error",
+          details : {
+            hierarchyStr : "$.key1Level0",
+            key          : "key0Level0",
+            validator    : validator2.keys.key1Level0.keys.key0Level0,
+          },
+        },
       },
-      type : "Error",
-    }],
+    },
   }, {
     input : {
       key0Level0 : "abc",
@@ -339,42 +387,49 @@ QUnit.test("Misc Validation", function(assert) {
         key2Tier1  : 123,
       },
     },
-    messages : [{
-      message : "MandatoryParamMissing",
-      params : {
-        hierarchyStr : "$.key1Level0",
-        key : "key0Level0",
-        validator : validator2.keys.key1Level0.keys.key0Level0,
+    invalidKeys : {
+      extraKey            : {
+        "$.key1Level0.key0Level1" : {
+          type : "warn",
+          details : {
+            hierarchyStr : "$.key1Level0",
+            key : "key0Level1",
+            matches : [
+              "key0Level0",
+            ],
+            otherLoc : [],
+            val : 123,
+            validator : validator2.keys.key1Level0,
+          },
+        },
+        "$.key1Level0.key2Tier1" : {
+          type : "warn",
+          details : {
+            hierarchyStr : "$.key1Level0",
+            key : "key2Tier1",
+            matches : [
+              "key1Tier1",
+              "key00Tier1",
+            ],
+            otherLoc : [],
+            val : 123,
+            validator : validator2.keys.key1Level0,
+          },
+        },
       },
-      type : "Error",
-    }, {
-      message : "ExtraParam",
-      params : {
-        hierarchyStr : "$.key1Level0",
-        key : "key0Level1",
-        matches : [
-          "key0Level0",
-        ],
-        otherLoc : [],
-        val : 123,
-        validator : validator2.keys.key1Level0,
+      invalidType         : {},
+      invalidValue        : {},
+      mandatoryKeyMissing : {
+        "$.key1Level0.key0Level0" : {
+          type : "error",
+          details : {
+            hierarchyStr : "$.key1Level0",
+            key : "key0Level0",
+            validator : validator2.keys.key1Level0.keys.key0Level0,
+          },
+        },
       },
-      type : "Warn",
-    }, {
-      message : "ExtraParam",
-      params : {
-        hierarchyStr : "$.key1Level0",
-        key : "key2Tier1",
-        matches : [
-          "key1Tier1",
-          "key00Tier1",
-        ],
-        otherLoc : [],
-        val : 123,
-        validator : validator2.keys.key1Level0,
-      },
-      type : "Warn",
-    }],
+    },
   }, {
     input : {
       key0Level0 : "abc",
@@ -392,21 +447,27 @@ QUnit.test("Misc Validation", function(assert) {
         }],
       },
     },
-    messages : [{
-      message : "ExtraParam",
-      params : {
-        hierarchyStr : "$.key1Level0.key00Tier1.0.key1Stage2",
-        key : "key1Tier1",
-        matches : [],
-        otherLoc : [
-          "$.key1Level0.key00Tier1.0.key1Tier1",
-          "$.key1Level0.key1Tier1"
-        ],
-        val : "abc",
-        validator : validator2.keys.key1Level0.keys.key00Tier1.elementsValidator.keys.key1Stage2,
+    invalidKeys : {
+      extraKey            : {
+        "$.key1Level0.key00Tier1.0.key1Stage2.key1Tier1" : {
+          type : "warn",
+          details : {
+            hierarchyStr : "$.key1Level0.key00Tier1.0.key1Stage2",
+            key : "key1Tier1",
+            matches : [],
+            otherLoc : [
+              "$.key1Level0.key00Tier1.0.key1Tier1",
+              "$.key1Level0.key1Tier1"
+            ],
+            val : "abc",
+            validator : validator2.keys.key1Level0.keys.key00Tier1.elementsValidator.keys.key1Stage2,
+          },
+        },
       },
-      type : "Warn",
-    }],
+      invalidType         : {},
+      invalidValue        : {},
+      mandatoryKeyMissing : {},
+    },
   }];
 
   for(var i = 0; i < tests.length; i++) {
@@ -416,7 +477,7 @@ QUnit.test("Misc Validation", function(assert) {
     //clear parent validator refs to remove circular refs
     hasParentRefs(validator2);
 
-    assert.propEqual(ValidateConfigObj.logger.messages, tests[i].messages);
+    assert.propEqual(ValidateConfigObj.invalidKeys, tests[i].invalidKeys);
   }
 });
 

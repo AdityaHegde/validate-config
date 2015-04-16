@@ -4,10 +4,10 @@ define([
 
 return {
   mandatoryParamsValidator : function(key, val, validator) {
-    this.logger.error("MandatoryParamMissing", {
+    this.invalidKeys.markAs("mandatory", this.hierarchy.fullHierarchyStr, "error", {
       key          : key,
       validator    : validator,
-      hierarchyStr : this.hierarchyStr,
+      hierarchyStr : this.hierarchy.hierarchyStr,
     });
     return true;
   },

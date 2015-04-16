@@ -9,11 +9,11 @@ return {
       result = !!val.match(validator.regex);
     }
     if(!result) {
-      this.logger.error("InvalidValue", {
-        key         : key,
-        actualValue : val,
-        validator   : validator,
-        hierarchyStr : this.hierarchyStr,
+      this.invalidKeys.markAs("value", this.hierarchy.fullHierarchyStr, "error", {
+        key          : key,
+        actualValue  : val,
+        validator    : validator,
+        hierarchyStr : this.hierarchy.hierarchyStr,
       });
     }
     return result;

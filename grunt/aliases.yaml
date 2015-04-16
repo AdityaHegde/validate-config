@@ -1,7 +1,11 @@
-default:
+build:
   - 'requirejs'
+  - 'amdclean'
+  - 'umd'
+
+default:
+  - 'build'
   - 'qunit'
-  - 'concat'
   - 'uglify'
   - 'yuidoc'
   - 'clean'

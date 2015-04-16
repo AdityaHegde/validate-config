@@ -1,5 +1,4 @@
 define([
-  "./hierarchy-tests",
   "./constructor-tests",
   "./validate-tests",
   "./morph-tests",

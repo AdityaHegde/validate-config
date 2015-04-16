@@ -14,13 +14,11 @@ QUnit.test("Set Validator", function(assert) {
     output : {
       fullKeysPresent       : {},
       fullKeysSet           : {},
-      hierarchy             : [],
-      hierarchyPlaceholder  : [],
-      hierarchyPlaceholders : [],
-      logger : {
-        errors   : [],
-        messages : [],
-        warns    : []
+      invalidKeys : {
+        extraKey            : {},
+        invalidType         : {},
+        invalidValue        : {},
+        mandatoryKeyMissing : {},
       },
     },
   }, {
@@ -45,9 +43,6 @@ QUnit.test("Set Validator", function(assert) {
           ["$", "b"],
         ],
       },
-      hierarchy             : [],
-      hierarchyPlaceholder  : [],
-      hierarchyPlaceholders : [],
       validatorConfig       : {
         type : "object",
         keys : {
@@ -59,10 +54,11 @@ QUnit.test("Set Validator", function(assert) {
           },
         },
       },
-      logger : {
-        errors   : [],
-        messages : [],
-        warns    : []
+      invalidKeys : {
+        extraKey            : {},
+        invalidType         : {},
+        invalidValue        : {},
+        mandatoryKeyMissing : {},
       },
     },
   }, {
@@ -99,9 +95,6 @@ QUnit.test("Set Validator", function(assert) {
           ["$", "b", "c"],
         ],
       },
-      hierarchy             : [],
-      hierarchyPlaceholder  : [],
-      hierarchyPlaceholders : [],
       validatorConfig       : {
         type : "object",
         keys : {
@@ -121,10 +114,11 @@ QUnit.test("Set Validator", function(assert) {
           },
         },
       },
-      logger : {
-        errors   : [],
-        messages : [],
-        warns    : []
+      invalidKeys : {
+        extraKey            : {},
+        invalidType         : {},
+        invalidValue        : {},
+        mandatoryKeyMissing : {},
       },
     },
   }, {
@@ -162,28 +156,25 @@ QUnit.test("Set Validator", function(assert) {
       fullKeysPresent       : {},
       fullKeysSet           : {
         a : [
-          ["$", "a", "@", "c", "a"],
+          ["$", "a", "*", "c", "a"],
           ["$", "a"],
         ],
         b : [
-          ["$", "a", "@", "b"],
+          ["$", "a", "*", "b"],
         ],
         c : [
-          ["$", "a", "@", "c"],
+          ["$", "a", "*", "c"],
         ],
         d : [
           ["$", "d"],
         ],
       },
-      hierarchy             : [],
-      hierarchyPlaceholder  : [],
-      hierarchyPlaceholders : [],
       validatorConfig       : {
         type : "object",
         keys : {
           a : {
             type : "array",
-            placeholderKey : "@",
+            placeholderKey : "*",
             elementsValidator : {
               type : "object",
               keys : {
@@ -203,17 +194,18 @@ QUnit.test("Set Validator", function(assert) {
           },
           d : {
             type : "array",
-            placeholderKey : "@",
+            placeholderKey : "*",
             elementsValidator : {
               type : "string",
             },
           },
         },
       },
-      logger : {
-        errors   : [],
-        messages : [],
-        warns    : []
+      invalidKeys : {
+        extraKey            : {},
+        invalidType         : {},
+        invalidValue        : {},
+        mandatoryKeyMissing : {},
       },
     },
   }, {
@@ -248,9 +240,6 @@ QUnit.test("Set Validator", function(assert) {
           ["$", "c"],
         ],
       },
-      hierarchy             : [],
-      hierarchyPlaceholder  : [],
-      hierarchyPlaceholders : [],
       validatorConfig       : {
         type : "object",
         keys : {
@@ -269,10 +258,11 @@ QUnit.test("Set Validator", function(assert) {
           },
         },
       },
-      logger : {
-        errors   : [],
-        messages : [],
-        warns    : []
+      invalidKeys : {
+        extraKey            : {},
+        invalidType         : {},
+        invalidValue        : {},
+        mandatoryKeyMissing : {},
       },
     },
   }];
@@ -283,6 +273,7 @@ QUnit.test("Set Validator", function(assert) {
     if(ValidateConfigObj.validatorConfig) {
       assert.ok(hasParentRefs(ValidateConfigObj.validatorConfig));
     }
+    delete ValidateConfigObj.hierarchy;
     assert.propEqual(ValidateConfigObj, tests[i].output);
   }
 });

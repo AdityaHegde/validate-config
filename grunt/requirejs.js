@@ -10,15 +10,10 @@ module.exports = {
       skipDirOptimize : true,
       removeCombined : true,
       optimize : "none",
-      wrap : {
-        startFile: "wrap/start.frag",
-        endFile: "wrap/end.frag"
-      },
 
       modules : [
         {
           name : "validate-config",
-          include : ["lib/almond.js"],
         },
       ],
     },
