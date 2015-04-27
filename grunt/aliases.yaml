@@ -2,11 +2,11 @@ build:
   - 'requirejs'
   - 'amdclean'
   - 'umd'
+  - 'uglify'
 
 default:
   - 'build'
   - 'qunit'
-  - 'uglify'
   - 'yuidoc'
   - 'clean'
 

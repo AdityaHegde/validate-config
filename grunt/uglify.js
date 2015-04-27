@@ -1,7 +1,7 @@
 module.exports = {
   dist: {
     files: {
-      "dist/validate-config.min.js": "dist/validate-config.js",
+      "validate-config.min.js": "validate-config.js",
     }
   }
 };

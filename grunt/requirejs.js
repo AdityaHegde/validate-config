@@ -14,6 +14,9 @@ module.exports = {
       modules : [
         {
           name : "validate-config",
+          exclude : [
+            "deep_keys_lib",
+          ],
         },
       ],
     },

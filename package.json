@@ -2,6 +2,7 @@
   "name": "validate-config",
   "version": "1.0.0",
   "description": "A module to validate config based on a schema",
+  "main": "validate-config.js",
   "keywords": [
     "validation",
     "object",

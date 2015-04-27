@@ -1,5 +1,9 @@
 tests
 node_modules
 npm-debug.log
+yuidocs
 coverage
+Gruntfile.js
+grunt
+src
 .travis.yml

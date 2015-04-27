@@ -2,7 +2,8 @@ module.exports = {
   dist : {
     options : {
       wrap : false,
-      aggressiveOptimizations : true,
+      //aggressiveOptimizations : true,
+      transformAMDChecks : false,
       esprima : {
         comment : false,
       },

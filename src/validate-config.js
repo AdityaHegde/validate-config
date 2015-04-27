@@ -1,10 +1,10 @@
 define([
   "./invalidKeys",
   "deep_keys_lib",
-  "./validators/main",
-  "./morph-config/main",
-  "./set-validator",
-], function(InvalidKeys, DeepKeysLib) {
+  "./validators/validators",
+  "./morph-config/morphConfigs",
+  "./setValidator",
+], function(InvalidKeys, DeepKeysLib, validators, morphConfigs, setValidator) {
 
 function ValidateConfig(validator) {
   if(validator) {
@@ -30,9 +30,10 @@ ValidateConfig.prototype.validate = function(config) {
   this.hierarchy.popFromHierarchy();
 };
 
-for(var i = 2; i < arguments.length; i++) {
-  for(var k in arguments[i]) {
-    ValidateConfig.prototype[k] = arguments[i][k];
+var modules = [validators, morphConfigs, setValidator];
+for(var i = 0; i < modules.length; i++) {
+  for(var k in modules[i]) {
+    ValidateConfig.prototype[k] = modules[i][k];
   }
 }
 
